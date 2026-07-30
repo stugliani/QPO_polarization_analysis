@@ -1,3 +1,7 @@
+"""
+import useful libraries
+
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
@@ -12,7 +16,10 @@ from ixpeobssim.binning.polarization import xBinnedPolarizationCube, xBinnedCoun
 from ixpeobssim.binning.misc import xBinnedLightCurve
 import ixpeobssim.core.pipeline as pipeline
 from ixpeobssim.evt.event import xEventFile
+"""
+to get DU number from command line
 
+"""
 # formatter = argparse.ArgumentDefaultsHelpFormatter
 # parser = argparse.ArgumentParser(formatter_class=formatter)
 # parser.add_argument('-du','--DU', type=int,  help='DU number ypu want to analyze', required=True)
@@ -22,16 +29,26 @@ from ixpeobssim.evt.event import xEventFile
 # n = args.DU
 
 
-ENERGY_BINNING = [2., 8.]
-grayfilter_bool = True
-acceptance_correction = False
+ENERGY_BINNING = [2., 8.] #energy interval in keV
+grayfilter_bool = True # IXPE "gray filter" ACTIVE in binning for this source (swift is very luminous!)
+acceptance_correction = False # acceptance correction disabled
 
+
+# insert YOUR PATH HERE (where the source files are stored)
 PATH = '/Users/stefanotugliani/Desktop/dati_ixpe/swift/event_files/02250901/'
-
+# and each DU file
 DU = [PATH+'ixpe02250901_det1_evt2_v01_src.fits',
       PATH+'ixpe02250901_det2_evt2_v01_src.fits',
       PATH+'ixpe02250901_det3_evt2_v01_src.fits'
       ]
+
+"""
+NW! THIS PARAMETER IS KEY IN THE ANALYSIS
+
+DT: to choose temporal resolution
+SEGMENT_SIZE: size of temporal segments 
+
+"""
 
 DT = 0.02
 SEGMENT_SIZE = 10
@@ -51,6 +68,11 @@ def readsimfitsfile(file_path):
 
 
 def get_TIME(FILE_LIST):
+    
+    """
+    computes global tstart (min time) and tstop (max time) among all the source files
+   
+    """
     tstart = []
     tstop = []
     for f in FILE_LIST:
@@ -60,14 +82,18 @@ def get_TIME(FILE_LIST):
     
     return np.min(tstart), np.max(tstop)
 
+
+
 def LC(FILE_LIST,tbins, ENERGY_BINNING, TSTART, TSTOP):
     """
         Function that creates light curve _LC fits 
         files and returns an xBinnedLightCurve object
     """
+    # create time-binned files from FITS file 
     LC_LIST = pipeline.xpbin(*FILE_LIST, algorithm='LC',tbins=tbins, tmin=TSTART, tmax=TSTOP, 
                    ebinning=ENERGY_BINNING, overwrite=True, 
                    grayfilter=grayfilter_bool,acceptcorr=acceptance_correction)
+    # time-binned files list stored as xBinnedLightCurve object 
     lightcurve = xBinnedLightCurve.from_file_list(LC_LIST)
     # os.remove(PATH+'ixpe02250901_det1_evt2_v01_src_lc.fits')
     # os.remove(PATH+'ixpe02250901_det2_evt2_v01_src_lc.fits')

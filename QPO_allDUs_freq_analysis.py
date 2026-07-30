@@ -32,6 +32,7 @@ SAVE = args.save
 # step_thr = args.step_thr
 # threshold_array = np.linspace(min_thr, max_thr, int((max_thr-min_thr)/step_thr)+1)
 
+#INSERIRE QUI PATH 
 PATH = '/Users/stefanotugliani/Desktop/dati_ixpe/swift/event_files/02250901/'
 
 event_times = np.load(PATH+'times_final.npy')
@@ -46,6 +47,8 @@ DU = [PATH+'ixpe02250901_det1_evt2_v01_src.fits',
 
 DT = 0.02
 SEGMENT_SIZE = 10
+
+#n_bin=segment_size/dt
 
 # parameters for PCUBE and LC
 ENERGY_BINNING = [2., 8.]
@@ -213,6 +216,7 @@ for r in tqdm(res):
     # norm, max_norm = PSQPO.MakeNorme(freqs=PSQPO.Freq,powers=PSQPO.Power,par=par,qpo=qpo1,hwhm=hwhm1,norme=norme,max_norm_array=max_norm_array)
     norm, max_norm = PSQPO.MakeNormeAree_Norm(freqs=PSQPO.Freq,powers=PSQPO.Power,par=par,qpo=qpo1,hwhm=hwhm1,norme=norme,max_norm_array=max_norm_array,norm=area_qpo)
     if i%5==0:
+        #segmenti temporali in cui salvo e guardo il PS che controllo online 
         plt.figure()
         plt.plot(r[0],r[1],marker='.',label=f'segment {i}')
         if not isinstance(par, int):

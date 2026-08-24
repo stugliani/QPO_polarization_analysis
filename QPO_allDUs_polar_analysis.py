@@ -80,7 +80,8 @@ emax = np.max(ENERGY_BINNING)
 
 
 # output file where the polarization results can be saved
-outfile = f'/Users/stefanotugliani/Desktop/dati_ixpe/swift/event_files/02250901/polarization_ALLDU_new_{seg_size}s_{method}_v.txt'
+#outfile = f'/Users/stefanotugliani/Desktop/dati_ixpe/swift/event_files/02250901/polarization_ALLDU_new_{seg_size}s_{method}_v.txt'
+outfile = f'/Users/gabri/OneDrive/Fisica/TESI/QPO_python/risultati/02250901/polarization_ALLDU_new_{seg_size}s_{method}_v.txt'
 file = open(outfile, 'w')
 
 QN, QN_ERR, UN, UN_ERR, PD, PD_ERR, PA, PA_ERR, MDP = [], [], [], [], [], [], [], [], []

@@ -33,7 +33,7 @@ SAVE = args.save
 # threshold_array = np.linspace(min_thr, max_thr, int((max_thr-min_thr)/step_thr)+1)
 
 #INSERIRE QUI PATH 
-PATH = '/Users/stefanotugliani/Desktop/dati_ixpe/swift/event_files/02250901/'
+PATH = '/Users/gabri/OneDrive/Fisica/TESI/QPO_python/QPO_swift/Obs1/'
 
 event_times = np.load(PATH+'times_final.npy')
 gti_starts = np.load(PATH+'gti_starts_merged.npy')

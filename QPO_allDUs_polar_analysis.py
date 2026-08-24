@@ -36,7 +36,8 @@ save = args.save # to save the figures
 save_out_file = args.save_out_file # to save the polarization results on an output file
 save_table = args.save_table # to save the results and useful data on an output csv table
 
-PATH = '/Users/stefanotugliani/Desktop/dati_ixpe/swift/event_files/02250901/'
+#PATH = '/Users/stefanotugliani/Desktop/dati_ixpe/swift/event_files/02250901/'
+PATH = '/Users/gabri/OneDrive/Fisica/TESI/QPO_python/QPO_swift/Obs1/'
 
 DU = [f'{PATH}ixpe02250901_det1_evt2_v01_src.fits',
       f'{PATH}ixpe02250901_det2_evt2_v01_src.fits',

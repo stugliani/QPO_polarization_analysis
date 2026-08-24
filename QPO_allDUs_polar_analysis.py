@@ -8,7 +8,8 @@ import pandas
 
 # the following functions are imported from 
 # other python scripts 
-sys.path.insert(0,'/Users/stefanotugliani/Desktop/analisi/analysis_functions')
+#sys.path.insert(0,'/Users/stefanotugliani/Desktop/analisi/analysis_functions')
+sys.path.insert(0,'/Users/gabri/OneDrive/Fisica/TESI/QPO_python/analisi')
 from polarization_plots import *
 from general import round_to_significant_figures
 

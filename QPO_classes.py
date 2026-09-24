@@ -260,24 +260,30 @@ class PowerSpectrumQPO:
         except RuntimeError:
             pass
         return par, cov
+    
+    def FindMaxInInterval(self, X, Y, mu, sigma): 
+        """ 
+            Function that returns the maximum 
+            power in a specified frequency range, 
+            evaluated using the parameters peak 
+            as center of the range and sigma to  
+            calculate the edges. 
+        """ 
+        sup = mu + sigma 
+        inf = mu - sigma 
+        mask = np.where((X > inf) & (X < sup))[0] 
 
-    def FindMaxInInterval(self,X,Y,mu,sigma):
-        """
-            Function that returns the maximum
-            power in a specified frequency range,
-            evaluated using the parameters peak
-            as center of the range and sigma to 
-            calculate the edges.
-        """
-        sup = mu + sigma
-        inf = mu - sigma
-        mask = np.where((X>inf) & (X<sup))[0]
-        if len(mask)>0:
-            sup = mu + 0.1*mu
-            inf = mu - 0.1*mu
-            mask = np.where((X>inf) & (X<sup))[0]
-        max_Y = np.max(Y[mask])
+        if len(mask) > 0: 
+            sup = mu + 0.1 * mu 
+            inf = mu - 0.1 * mu 
+            mask = np.where((X > inf) & (X < sup))[0] 
+    
+        max_Y = np.max(Y[mask]) 
+    
         return max_Y
+
+
+
     
     def Compatibility(self,a,aErr,b,bErr,nsigma):
         delta = abs(a - b) / np.sqrt(aErr**2 + bErr**2)

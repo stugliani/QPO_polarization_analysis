@@ -22,7 +22,7 @@ for freq_file in freq_files:
 
   freq = np.load(freq_file)
   power = np.load(power_norm_file)
-  plt.plot(freq,power,marker='.',linestyle='')
+  plt.plot(freq,power,marker='.',linestyle='', label=f'Energy bin: {ebin}')
 
   
 plt.xscale('log')

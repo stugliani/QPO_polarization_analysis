@@ -11,7 +11,7 @@ parser.add_argument('-du','--DU', type=int,  help='DU number ypu want to analyze
 parser.add_argument('-seg','--seg_size', type=str,  help='segment size', required=True)
 parser.add_argument('-s','--save', action='store_true',  help='Do you want to save the figures ?', required=False, default=False)
 parser.add_argument('-stt','--save-ttest', action='store_true',  help='Do you want to save the t test arrays ?', required=False, default=False)
-parser.add_argument('-ebin','--energy-bin', type=str, help='energy bin label: E2-4keV or E4-8keV', choices=['E2-4keV','E4-8keV'], required=True)
+parser.add_argument('-ebin','--energy-bin', type=str, help='energy bin label: E2.0-3.5keV or E3.5-8.0keV', choices=['E2.0-3.5keV','E3.5-8.0keV'], required=True)
 
 args = parser.parse_args()
 
@@ -27,7 +27,8 @@ save = args.save
 save_t = args.save_ttest
 ENERGY_BIN_LABEL = args.energy_bin
 
-file_name = (os.path.basename(file_csv)).split('.')[0]
+#file_name = (os.path.basename(file_csv)).split('.')[0]
+file_name = os.path.splitext(os.path.basename(file_csv))[0]
 
 path = '/Users/gabri/OneDrive/Fisica/TESI/QPO_python/QPO_swift/Obs1/'
 

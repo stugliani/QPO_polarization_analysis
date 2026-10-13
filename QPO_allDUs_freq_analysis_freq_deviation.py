@@ -76,6 +76,8 @@ ts = StingrayTimeseries(time=event_times,gti=gti)
     and the bounds, both for the single and double Lorentzian fit.
 """
 
+#obs2
+
 norm1 = 7852.85      # Alziamo la norma per dare molta più area/altezza al picco
 center1 = 2.78        # Centro stabile della fondamentale
 hwhm1 = 0.308
@@ -94,7 +96,7 @@ initial_guesses2 = [norm1,center1,hwhm1,norm2,center2,hwhm2,A,B,C]
 bounds2 = (
     [0.0, 2.0, 0.05, 0.0, 4.5, 0.10, 0.0, 0.0, 0.0],       # Limiti inferiori (min)
     [np.inf, 4.0, 0.5, np.inf, 7.0, 0.70, np.inf, 10.0, np.inf] # Limiti superiori (max: hwhm2 max = 0.80)
-)
+    )
 
 PSQPO = PowerSpectrumQPO(stingray_ts=ts, dt=DT, segment_int=10, segment_tot=50)
 
@@ -232,7 +234,7 @@ initial_guesses3 = [initial_guess_for_norm,qpo1,qpo_hwhm1]
 norm_inf, norm_sup = 0, np.inf
 nu_inf, nu_sup = qpo1-3*qpo_hwhm1, qpo1+3*qpo_hwhm1
 h_inf, h_sup = qpo_hwhm1-3*qpo_hwhm1_err, qpo_hwhm1+3*qpo_hwhm1_err
-bounds3 = ([norm_inf, nu_inf, h_inf], [norm_sup, nu_sup, h_sup])
+bounds3 = ([norm_inf, nu_inf, h_inf], [norm_sup, nu_sup, h_sup])  #prova a cambiare i bound per non saturare
 
 i=0
 norme, max_norm_array = [], []

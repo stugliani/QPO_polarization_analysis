@@ -234,8 +234,8 @@ initial_guess_for_norm = (max_k_guess-PSQPO.C)*np.pi*qpo_hwhm1
 
 initial_guesses3 = [initial_guess_for_norm,qpo1,qpo_hwhm1]
 norm_inf, norm_sup = 0, np.inf
-nu_inf, nu_sup = qpo1-1*qpo_hwhm1, qpo1+1*qpo_hwhm1
-h_inf, h_sup = qpo_hwhm1-1*qpo_hwhm1_err, qpo_hwhm1+1*qpo_hwhm1_err
+nu_inf, nu_sup = qpo1-3*qpo_hwhm1, qpo1+3*qpo_hwhm1
+h_inf, h_sup = qpo_hwhm1-3*qpo_hwhm1_err, qpo_hwhm1+3*qpo_hwhm1_err
 bounds3 = ([norm_inf, nu_inf, h_inf], [norm_sup, nu_sup, h_sup])
 
 i=0
@@ -243,6 +243,8 @@ norme, max_norm_array = [], []
 norme_test = []
 scarti_freq = []
 scarti_max = []
+scarti_max_segment_freq = []
+
  
 for r in tqdm(res):
     PSQPO.Freq = r[0]
@@ -252,10 +254,12 @@ for r in tqdm(res):
     norm, max_norm = PSQPO.MakeNormeAree_Norm(freqs=PSQPO.Freq,powers=PSQPO.Power,par=par,qpo=qpo1,hwhm=hwhm1,norme=norme,max_norm_array=max_norm_array,norm=area_qpo)
     # calcolo scarti tra frequenza di qpo nel segmento (.i.e. media della gaussiana) e frequenza di qpo globale
     scarti_freq.append(par[1] - qpo1)
-    max_Y = PSQPO.FindMaxInInterval(X=PSQPO.Freq, Y=PSQPO.Power, mu=qpo1, sigma=hwhm1) 
+    max_Y = PSQPO.FindMaxInInterval(X=PSQPO.Freq, Y=PSQPO.Power, mu=qpo1, sigma=qpo_hwhm1) 
     index_max_Y = np.where(PSQPO.Power == max_Y)[0][0]
     max_X = PSQPO.Freq[index_max_Y]
     scarti_max.append(max_X-qpo1)
+    scarti_max_segment_freq.append(max_X-par[1])
+
 
 
     if i%5==0:
@@ -297,7 +301,17 @@ print("FREQ - scarto medio negativo =", freq_mean_neg)
 
 
 
-#max
+scarti_max_segment_freq_array = np.array(scarti_max_segment_freq)
+max_locfreq_scarto_quadratico_medio = np.sqrt(np.mean(scarti_max_segment_freq_array**2))
+print("MAX&LOCFREQ-scarto quadratico medio =", max_locfreq_scarto_quadratico_medio)
+max_locfreq_pos = scarti_max_segment_freq_array[scarti_max_segment_freq_array > 0]
+max_locfreq_neg = scarti_max_segment_freq_array[scarti_max_segment_freq_array < 0]
+max_locfreq_mean_pos = np.mean(max_locfreq_pos) if len(max_locfreq_pos) > 0 else np.nan
+max_locfreq_mean_neg = np.abs(np.mean(max_locfreq_neg)) if len(max_locfreq_neg) > 0 else np.nan
+max_locfreq_mean_difference = (max_locfreq_mean_pos) - (max_locfreq_mean_neg)
+
+
+#max-nu global
 
 scarti_max_array = np.array(scarti_max)
 max_scarto_quadratico_medio = np.sqrt(np.mean(scarti_max_array**2))
@@ -311,14 +325,15 @@ print("MAX - scarto medio positivo =", max_mean_pos)
 print("MAX - scarto medio negativo =", max_mean_neg)
 
 
-#plot freq from fit deviation 
+#plot freq from fit deviation - freq global 
 plt.figure(figsize=(8, 5))
-plt.plot(scarti_freq, marker='.', label=r'$\nu_{\mathrm{QPO}} - \nu_{\mathrm{QPO, global}}$')
+plt.plot(scarti_freq, marker='.', label=r'$\nu_{\mathrm{QPO}} - \nu_{\mathrm{QPO, global}}$'+ f' ({SEG_SIZE}s)')
 plt.axhline(y=freq_scarto_quadratico_medio, color='r', linestyle='-', label='RMS')
 plt.axhline(y=(freq_scarto_quadratico_medio)*(-1), color='r', linestyle='-')
 plt.axhspan(0, freq_mean_difference, alpha=0.3,label ='positive-negative deviation difference')
 plt.xlabel('segment number')
 plt.ylabel('frequency deviation [Hz]')
+plt.title('Difference between global and single segment QPO frequency')
 plt.grid('both')
 plt.legend()
 plt.savefig(figname_ps_seg_path+f'frequency_deviation.png', dpi=300)
@@ -326,20 +341,35 @@ plt.show()
 
 
 plt.figure(figsize=(8, 5))
-plt.plot(scarti_max, marker='.', label=r'$\nu_{MAX} - \nu_{\mathrm{QPO, global}}$')
+plt.plot(scarti_max, marker='.', label=r'$\nu_{MAX} - \nu_{\mathrm{QPO, global}}$'+ f' ({SEG_SIZE}s)')
 plt.axhline(y=max_scarto_quadratico_medio, color='r', linestyle='-', label ='RMS')
 plt.axhline(y= - (max_scarto_quadratico_medio), color='r', linestyle='-')
 plt.axhspan(0, max_mean_difference, alpha=0.3, label ='positive-negative deviation difference')
 plt.xlabel('segment number')
 plt.ylabel('frequency deviation [Hz]')
+plt.title('Difference between global QPO frequency and single segment max frequency')
 plt.grid('both')
 plt.legend()
 plt.savefig(figname_ps_seg_path+f'frequency_max_deviation.png', dpi=300)
 plt.show()
 
-m, q = np.polyfit(scarti_freq, scarti_max, 1)
-print("pendenza =", m)
-print("intercetta =", q)
+#m, q = np.polyfit(scarti_freq, scarti_max, 1)
+#print("pendenza =", m)
+#print("intercetta =", q)
+
+
+plt.figure(figsize=(8, 5))
+plt.plot(scarti_max_segment_freq, marker='.', label=r'$\nu_{MAX} - \nu_{\mathrm{QPO}}$'+ f' ({SEG_SIZE}s)')
+plt.axhline(y=max_locfreq_scarto_quadratico_medio, color='r', linestyle='-', label ='RMS')
+plt.axhline(y= - (max_locfreq_scarto_quadratico_medio), color='r', linestyle='-')
+plt.axhspan(0, max_locfreq_mean_difference, alpha=0.3, label ='positive-negative deviation difference')
+plt.xlabel('segment number')
+plt.ylabel('frequency deviation [Hz]')
+plt.title('Difference between single segment QPO frequency and single segment max')
+plt.grid('both')
+plt.legend()
+plt.savefig(figname_ps_seg_path+f'local_frequency_max_deviation.png', dpi=300)
+plt.show()
 
 
 breakpoint

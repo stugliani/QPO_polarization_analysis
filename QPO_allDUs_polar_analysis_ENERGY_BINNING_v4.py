@@ -27,7 +27,7 @@ parser.add_argument('-m','--method', type=str,  help='method for selection', req
 parser.add_argument('-s','--save', action='store_true',  help='Do you want to save the figures ?', required=False, default=False)
 parser.add_argument('-sf','--save_out_file', action='store_true',  help='Do you want to save the output file ?', required=False, default=False)
 parser.add_argument('-st','--save_table', action='store_true',  help='Do you want to save the output csv table ?', required=False, default=False)
-parser.add_argument('-ebin','--energy-bin', type=str, help='energy bin label: E2-4keV or E4-8keV', choices=['E2-4keV','E4-8keV'], required=True)
+parser.add_argument('-ebin','--energy-bin', type=str, help='energy bin label: E2.0-3.5keV or E3.5-8.0keV', choices=['E2.0-3.5keV','E3.5-8.0keV'], required=True)
 
 args = parser.parse_args()
 
@@ -47,10 +47,10 @@ DU = [f'{PATH}ixpe02250901_det1_evt2_v01_src.fits',
 
 
 ENERGY_BIN_LABEL = args.energy_bin
-if ENERGY_BIN_LABEL == 'E2-4keV':
-    ENERGY_BINNING = [2., 4.]
-elif ENERGY_BIN_LABEL == 'E4-8keV':
-    ENERGY_BINNING = [4., 8.]
+if ENERGY_BIN_LABEL == 'E2.0-3.5keV':
+    ENERGY_BINNING = [2.0, 3.5]
+elif ENERGY_BIN_LABEL == 'E3.5-8.0keV':
+    ENERGY_BINNING = [3.5, 8.0]
 
 grayfilter_bool = True
 acceptance_correction = False
@@ -174,7 +174,9 @@ for thr in THR:
 
     selected_events = selected_events_1+selected_events_2+selected_events_3
     not_selected_events = not_selected_events_1+not_selected_events_2+not_selected_events_3   
-    EMIN, EMAX = 2., 4.   # coerente col bin usato nello script freq
+    
+    # ATTENZIONE! Cambiare sempre qui!!
+    EMIN, EMAX = 2., 3.5   # coerente col bin usato nello script freq
 
 
     run_xpselect(DU_new[0], custom_mask=mask_sel_path_1, suffix=SUFFIX)
@@ -224,6 +226,9 @@ for thr in THR:
         the contour plots of the polarization angle
         and degree
     """
+    # calculate percentage of selected events
+    perc_sel = (selected_events / (selected_events + not_selected_events)) * 100
+    perc_not_sel = (not_selected_events / (selected_events + not_selected_events)) * 100
     fig, ax = plt.subplots(subplot_kw={'projection': 'polar'}, figsize=(10, 7), tight_layout=True)
     polarization_contour(pol_pcube_list,ax=ax,text=True,global_color=['C0'],aspect='half top',levels=[0.68,0.95])
     polarization_contour(pol_pcube_list_n,ax=ax,text=True,global_color=['C1'],aspect='half top',levels=[0.68,0.95])
@@ -231,15 +236,14 @@ for thr in THR:
     ax.set_thetamin(-30)
     ax.set_thetamax(30)
     ax.set_rmax(7)
-    ax.text(np.radians(0), 8.25, f'{thr} {seg_size}s {method}',ha='center',va='center')
+    ax.text(np.radians(0), 8.25, f'{thr} {seg_size}s {method} - {ENERGY_BIN_LABEL}',ha='center',va='center')
     ax.text(np.radians(0), 7.6, 'Polarization angle [°]',ha='center',va='center')
-    ax.text(np.radians(60), 3, 'Selected events',color='C0',ha='center',va='center')
-    ax.text(np.radians(60), 2.5, 'Not selected events',color='C1',ha='center',va='center')
+    ax.text(np.radians(60), 3.5, f'Selected events: {perc_sel:.1f}%',color='C0',ha='center',va='center')
+    ax.text(np.radians(62), 3.1, f'Not selected events: {perc_not_sel:.1f}%',color='C1',ha='center',va='center')
     ax.text(np.radians(-45), 2, 'Polarization degree [%]',rotation=60)
     ax.text(np.radians(0), 7.75, 'N')
     ax.text(np.radians(-25), 7.75, 'W')
     ax.text(np.radians(25), 7.75, 'E')
-
         # polar plot
     plt.savefig(f'{images_folder}/polar_{method}_{SUFFIX}.png')
     plt.close(fig)

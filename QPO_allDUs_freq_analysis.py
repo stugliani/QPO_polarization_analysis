@@ -33,7 +33,8 @@ SAVE = args.save
 # threshold_array = np.linspace(min_thr, max_thr, int((max_thr-min_thr)/step_thr)+1)
 
 #INSERIRE QUI PATH 
-PATH = '/Users/gabri/OneDrive/Fisica/TESI/QPO_python/QPO_swift/Obs1/'
+#PATH = '/Users/gabri/OneDrive/Fisica/TESI/QPO_python/QPO_swift/Obs1/'
+PATH = '/Users/gabri/OneDrive/Fisica/TESI/QPO_python/QPO_python_OLD_version/Obs1/'
 
 event_times = np.load(PATH+'times_final.npy')
 gti_starts = np.load(PATH+'gti_starts_merged.npy')
@@ -43,7 +44,12 @@ du_id_final = np.load(PATH+'du_id_final.npy')
 DU = [PATH+'ixpe02250901_det1_evt2_v01_src.fits',
       PATH+'ixpe02250901_det2_evt2_v01_src.fits',
       PATH+'ixpe02250901_det3_evt2_v01_src.fits'
-      ]
+     ]
+
+#DU = [PATH+'ixpe02251001_det1_evt2_v01_src.fits',
+ #     PATH+'ixpe02251001_det2_evt2_v01_src.fits',
+   #   PATH+'ixpe02251001_det3_evt2_v01_src.fits'
+    # ]
 
 DT = 0.02
 SEGMENT_SIZE = 10

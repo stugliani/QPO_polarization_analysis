@@ -55,8 +55,11 @@ mask_E2 = (energy_final >= 4.) & (energy_final <= 8.)
 
 #MASCHERE PER BIN DI ENERGIA
 # il GTI è già stato applicato in times_corrected, quindi non serve rifarlo qui!
-times_bin1 = event_times[mask_E1]
+#times_bin1 = event_times[mask_E1]
 #times_bin2 = event_times[mask_E2]
+#print(len(times_bin1))
+#print(len(times_bin2))
+
 
 if ENERGY_BIN_LABEL == 'E2-4keV':
     mask_E = mask_E1
@@ -66,10 +69,16 @@ elif ENERGY_BIN_LABEL == 'E4-8keV':
 event_times = event_times[mask_E]
 du_id_final = du_id_final[mask_E]
 
+
+n_obs = 1 #ATT! INSERIRE QUI IL NUMERO DELL'OSSERVAZIONE CHE SI STA CONSIDERANDO!!
+#obs1
 DU = [PATH+'ixpe02250901_det1_evt2_v01_src.fits',
       PATH+'ixpe02250901_det2_evt2_v01_src.fits',
       PATH+'ixpe02250901_det3_evt2_v01_src.fits'
       ]
+
+
+
 
 
 DT = 0.02
@@ -120,6 +129,7 @@ ts = StingrayTimeseries(time=event_times,gti=gti)
     I set the initial guesses for the paramenters of the fit
     and the bounds, both for the single and double Lorentzian fit.
 """
+#obs1
 norm1 = 45000
 center1 = 1.35
 hwhm1 = 0.1
@@ -162,6 +172,12 @@ area_qpo = par[0]
 mask_qpo_window = ((PSQPO.Freq >= qpo1 - qpo_hwhm1) & (PSQPO.Freq <= qpo1 + qpo_hwhm1))
 max_qpo_power = float(np.max(PSQPO.Power[mask_qpo_window]))
 
+
+n_events_tot = len(np.load(PATH + 'times_final.npy'))  
+n_events_selected = len(event_times)  
+perc_selected = (n_events_selected / n_events_tot) * 100
+
+
 plt.figure('POWER SPECTRUM',figsize=(10,7))
 plt.plot(PSQPO.Freq,PSQPO.Power,marker='.',linestyle='')
 np.save
@@ -176,13 +192,17 @@ plt.plot(x,PSQPO.Lorentzian(x,par[0],par[1],par[2])+par[8],marker='',linestyle='
 plt.plot(x,PSQPO.Lorentzian(x,par[3],par[4],par[5])+par[8],marker='',linestyle='--',label=f'Lorentzian qpo2\n qpo = {qpo2} Hz\n hwhm = {qpo_hwhm2} Hz\n norm = {qpo_norm2}')
 plt.plot(x,PSQPO.Exp(x,par[6],par[7],par[8]),marker='',linestyle='--',label=f'exp: ' + r'$A e^{-Bx}+C$' + f'\n A = {exp_norm} \n B = {exp_tau} \n C = {exp_const}')
 # plt.yscale('log')
+plt.plot([],[], ' ', label=f'Events in {ENERGY_BIN_LABEL}: \n {n_events_selected:.2e} \n ({perc_selected:.1f}% of total)')
+plt.title(f'Global fit of power spectrum: Obs {n_obs} - {ENERGY_BIN_LABEL}')
 plt.xscale('log')
 plt.grid('both')
 plt.xlabel('frequency [Hz]')
 plt.ylabel('power')
 plt.xlim([np.min(PSQPO.Freq),np.max(PSQPO.Freq)])
-plt.legend()
+plt.legend(loc='upper right')
 # plt.show()
+
+
 
 model_power = PSQPO.DoubleLorentzianExp(PSQPO.Freq,par[0],par[1],par[2],par[3],par[4],par[5],par[6],par[7],par[8])
 sigma_ps = PSQPO.Power_err

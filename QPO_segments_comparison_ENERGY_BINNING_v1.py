@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 formatter = argparse.ArgumentDefaultsHelpFormatter
 parser = argparse.ArgumentParser(formatter_class=formatter)
 parser.add_argument('-du', '--DU', type=int, help='DU number you want to analyze, type 0 if all DUs', required=False, default=0)
-parser.add_argument('-ebin', '--energy-bin', type=str, help='energy bin label: E2-4keV or E4-8keV', choices=['E2-4keV', 'E4-8keV'], required=True)
+parser.add_argument('-ebin', '--energy-bin', type=str, help='energy bin label: E2.0-3.5keV or E3.5-8.0keV', choices=['E2.0-3.5keV', 'E3.5-8.0keV'], required=True)
 
 args = parser.parse_args()
 
@@ -17,7 +17,6 @@ if du == 0:
 else:
     alldus = False
 
-# Path con sintassi / come nel file originale
 path_ = 'C:/Users/gabri/OneDrive/Fisica/TESI/QPO_python/QPO_swift/Obs1/'
 
 if alldus:
@@ -25,30 +24,18 @@ if alldus:
 else:
     path = path_ + f'DU{du}/'
 
-segs = np.array([70, 75,80, 85,90])
+segs = np.array([80,85,90,95])
 
 thr_array, ttest_pvalue_q, ttest_pvalue_u = [], [], []
 
 for i in range(len(segs)):
-    # 1. Caricamento p-value
+    thr_ = np.load(path+f'seg{segs[i]}s_{ENERGY_BIN_LABEL}/threshold_ALLdu_new.npy')
+    thr_array.append(thr_)
     ttest_pvalue_ = np.load(path + f'ttest_data_{segs[i]}s_{ENERGY_BIN_LABEL}.npy')
     ttest_pvalue_q.append(ttest_pvalue_[:, 0])
     ttest_pvalue_u.append(ttest_pvalue_[:, 1])
 
-    # 2. FIX PER IL RANGE DELLE SOGLIE (devono essere 56 elementi come i p-value)
-    try:
-        # Tenta di caricare il file dedicato alle soglie se esiste
-        thr_ = np.load(path + f'seg{segs[i]}s_{ENERGY_BIN_LABEL}/threshold_array.npy')
-    except FileNotFoundError:
-        try:
-            thr_ = np.load(path + f'seg{segs[i]}s/threshold_array.npy')
-        except FileNotFoundError:
-            # Se il file .npy delle soglie non esiste, ricrea l'asse X con 56 punti 
-            # corrispondenti alla dimensione del p-value (es. da 0 a 55 o il range usato)
-            num_thresholds = len(ttest_pvalue_[:, 0])
-            thr_ = np.arange(num_thresholds)  # Oppure np.linspace(min_thr, max_thr, num_thresholds)
-
-    thr_array.append(thr_)
+   
 
 marker_list = ['o', 'v', '^', '<', '>', 's', 'p', '*', 'h', 'H', '+', 'x', 'X', 'D', 'P', '8']
 
